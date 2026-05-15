@@ -26,7 +26,6 @@
             object-fit: cover;
             background-color: #e9ecef;
         }
-        /* Memastikan card-body mengambil sisa ruang agar footer tetap di bawah */
         .card-body { flex: 1 1 auto; }
     </style>
 </head>
@@ -36,6 +35,10 @@
         <div class="container">
             <a class="navbar-brand fw-bold" href="/katalog"><i class="bi bi-book-half"></i> E-PERPUS</a>
             <div class="ms-auto d-flex align-items-center">
+                <a href="/pinjaman-saya" class="btn btn-sm btn-outline-light rounded-pill px-3 me-3">
+                    <i class="bi bi-journal-bookmark"></i> Pinjaman Saya
+                </a>
+                
                 <span class="text-light me-3 d-none d-md-inline">Halo, <strong>{{ Auth::user()->name }}</strong></span>
                 <form action="/logout" method="POST" class="m-0">
                     @csrf

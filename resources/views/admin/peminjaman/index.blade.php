@@ -30,22 +30,40 @@
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $p->user->name }}</td>
                             <td>{{ $p->buku->judul }}</td>
-                            <td>{{ \Carbon\Carbon::parse($p->tgl_pinjam)->format('d/m/Y') }}</td>
-                            <td>{{ \Carbon\Carbon::parse($p->tgl_kembali_plan)->format('d/m/Y') }}</td>
+                            <td>{{ $p->tgl_pinjam ? \Carbon\Carbon::parse($p->tgl_pinjam)->format('d/m/Y') : '-' }}</td>
+                            <td>{{ $p->tgl_kembali_plan ? \Carbon\Carbon::parse($p->tgl_kembali_plan)->format('d/m/Y') : '-' }}</td>
                             <td>
-                                <span class="badge {{ $p->status == 'dipinjam' ? 'bg-warning text-dark' : 'bg-success' }}">
-                                    {{ strtoupper($p->status) }}
-                                </span>
+                                @if($p->status == 'dipinjam')
+                                    <span class="badge bg-warning text-dark">DIPINJAM</span>
+                                @elseif($p->status == 'reservasi')
+                                    <span class="badge bg-info text-dark">RESERVASI</span>
+                                @elseif($p->status == 'selesai')
+                                    <span class="badge bg-success">SELESAI</span>
+                                @else
+                                    <span class="badge bg-danger">{{ strtoupper($p->status) }}</span>
+                                @endif
                             </td>
                             <td class="text-center">
-                                @if(Auth::user()->role == 'petugas' && $p->status == 'dipinjam')
-                                    <a href="/peminjaman/kembalikan/{{ $p->id }}" class="btn btn-success btn-sm">
-                                        <i class="bi bi-arrow-return-left"></i> Kembalikan
-                                    </a>
-                                @elseif($p->status == 'selesai')
-                                    <span class="badge bg-secondary">Sudah Kembali</span>
+                                {{-- CEK ROLE PETUGAS --}}
+                                @if(strtolower(Auth::user()->role) == 'petugas')
+                                    
+                                    @if($p->status == 'dipinjam')
+                                        <a href="/peminjaman/kembalikan/{{ $p->id }}" class="btn btn-success btn-sm">
+                                            <i class="bi bi-arrow-return-left"></i> Kembalikan
+                                        </a>
+                                    @elseif($p->status == 'reservasi')
+                                        <a href="/peminjaman/ambil/{{ $p->id }}" class="btn btn-info btn-sm text-white">
+                                            <i class="bi bi-hand-thumbs-up"></i> Konfirmasi Ambil
+                                        </a>
+                                    @elseif($p->status == 'selesai')
+                                        <span class="badge bg-secondary">Sudah Kembali</span>
+                                    @else
+                                        <span class="text-muted small">-</span>
+                                    @endif
+
                                 @else
-                                    <span class="text-muted">Hanya Petugas</span>
+                                    {{-- JIKA LOGIN BUKAN PETUGAS --}}
+                                    <span class="text-muted small">Hanya Petugas</span>
                                 @endif
                             </td>
                         </tr>

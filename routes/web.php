@@ -36,10 +36,20 @@ Route::middleware('auth')->group(function () {
             return redirect('/katalog');
         }
 
-        // Otomatis batalkan reservasi yang lewat 2 jam
-        Peminjaman::where('status', 'reservasi')
-            ->where('tgl_reservasi', '<', now()->subHours(2))
-            ->update(['status' => 'batal']);
+        // --- LOGIKA OTOMATIS BATALKAN RESERVASI ---
+        // Cari reservasi yang sudah lewat 2 jam dari sekarang
+        $expired = Peminjaman::where('status', 'reservasi')
+                    ->where('batas_ambil', '<', now())
+                    ->get();
+
+        foreach($expired as $e) {
+            // 1. Balikin stok buku karena tidak jadi diambil
+            Buku::where('id', $e->buku_id)->increment('stok', 1);
+            
+            // 2. Ubah status data tersebut jadi 'batal'
+            $e->update(['status' => 'batal']);
+        }
+        // --- SELESAI LOGIKA ---
 
         return view('admin.dashboard', [
             'jumlahBuku'   => Buku::count(),
@@ -169,6 +179,21 @@ Route::get('/peminjaman/kembalikan/{id}', function ($id) {
     // Proses kirim reservasi
 // Proses Reservasi
 Route::post('/reservasi/{id}', function ($id) {
+    // 1. Validasi Jam Operasional
+    $sekarang = now();
+    $hari = $sekarang->format('N'); // 1 (Senin) sampai 7 (Minggu)
+    $jam = $sekarang->format('H:i');
+
+    if ($hari <= 5) { // Senin - Jumat
+        if ($jam < '09:00' || $jam > '20:00') {
+            return back()->with('error', 'Gagal! Reservasi hanya bisa dilakukan saat jam operasional (09:00 - 20:00).');
+        }
+    } else { // Sabtu - Minggu
+        if ($jam < '09:00' || $jam > '15:00') {
+            return back()->with('error', 'Gagal! Reservasi hanya bisa dilakukan saat jam operasional (09:00 - 15:00).');
+        }
+    }
+
     $buku = \App\Models\Buku::findOrFail($id);
 
     if ($buku->stok <= 0) {
@@ -204,5 +229,17 @@ Route::get('/pinjaman-saya', function () {
                 ->get();
     // Kita arahkan ke file baru yang akan kita buat: pinjaman_saya.blade.php
     return view('pinjaman_saya', compact('pinjaman'));
+});
+
+Route::get('/peminjaman/ambil/{id}', function ($id) {
+    $p = \App\Models\Peminjaman::findOrFail($id);
+    
+    $p->update([
+        'status' => 'dipinjam',
+        'tgl_pinjam' => now(),
+        'tgl_kembali_plan' => now()->addDays(3), 
+    ]);
+
+    return back()->with('success', 'Buku berhasil diambil! Status berubah menjadi DIPINJAM.');
 });
 });
