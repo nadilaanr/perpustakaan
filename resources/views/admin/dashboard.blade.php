@@ -50,12 +50,5 @@
             </div>
         </div>
     </div>
-
-    <div class="card shadow-sm mt-3">
-        <div class="card-body">
-            <h4>Selamat Datang, {{ Auth::user()->name }}!</h4>
-            <p class="text-muted">Ini adalah halaman dashboard admin untuk mengelola sirkulasi buku, data anggota, dan laporan perpustakaan.</p>
-        </div>
-    </div>
 </div>
 @endsection

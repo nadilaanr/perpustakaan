@@ -23,8 +23,13 @@
             <li>
                 <a href="/katalog-admin" class="nav-link"><i class="bi bi-book"></i> Data Buku</a>
             </li>
-            <li>
-                <a href="/users" class="nav-link"><i class="bi bi-people"></i> Data Users</a>
+                @if(Auth::user()->role == 'admin')
+<li>
+    <a href="/users" class="nav-link">
+        <i class="bi bi-people"></i> Data Users
+    </a>
+</li>
+@endif
             </li>
             <li>
                 <a href="/peminjaman" class="nav-link"><i class="bi bi-cart-check"></i> Peminjaman</a>
@@ -46,5 +51,6 @@
     <div class="main-content">
         @yield('content')
     </div>
+
 </body>
 </html>

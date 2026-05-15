@@ -7,30 +7,28 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Peminjaman extends Model
 {
-    // Jika nama tabelmu di database 'peminjamen', tambahkan ini untuk keamanan
     protected $table = 'peminjamen';
 
-    // Kolom yang boleh diisi (mass assignment)
     protected $fillable = [
         'user_id', 
         'buku_id', 
-        'tanggal_pinjam', 
-        'tanggal_kembali', 
+        'tgl_pinjam', 
+        'tgl_kembali_plan', 
         'status', 
         'denda'
     ];
 
-    /**
-     * Relasi ke model User (Siapa yang meminjam)
-     */
+    // TAMBAHKAN INI: Agar Laravel tahu ini adalah tanggal
+    protected $casts = [
+        'tgl_pinjam' => 'datetime',
+        'tgl_kembali_plan' => 'date',
+    ];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    /**
-     * Relasi ke model Buku (Buku apa yang dipinjam)
-     */
     public function buku(): BelongsTo
     {
         return $this->belongsTo(Buku::class, 'buku_id');

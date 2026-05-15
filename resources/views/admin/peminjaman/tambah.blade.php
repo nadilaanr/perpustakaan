@@ -11,11 +11,12 @@
                 <div class="mb-3">
                     <label class="form-label fw-bold">Pilih Peminjam</label>
                     <select name="user_id" class="form-select" required>
-                        <option value="" selected disabled>-- Pilih Siswa --</option>
+                        <option value="" selected disabled>-- Pilih Peminjam --</option>
                         @foreach($users as $u)
                             @if($u->role == 'peminjam')
                                 <option value="{{ $u->id }}">{{ $u->name }}</option>
                             @endif
+                            
                         @endforeach
                     </select>
                 </div>
@@ -45,6 +46,11 @@
                     <button type="submit" class="btn btn-primary px-4">Simpan Transaksi</button>
                     <a href="/peminjaman" class="btn btn-light border px-4">Batal</a>
                 </div>
+                @if(session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
             </form>
         </div>
     </div>
