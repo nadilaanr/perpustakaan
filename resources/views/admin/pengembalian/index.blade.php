@@ -30,17 +30,19 @@
                             <td>{{ \Carbon\Carbon::parse($r->tgl_pinjam)->format('d/m/Y') }}</td>
                             <td>{{ \Carbon\Carbon::parse($r->updated_at)->format('d/m/Y') }}</td>
                             <td>
-    @if($r->denda != 0)
-        <span class="text-danger fw-bold">Rp {{ number_format(abs($r->denda), 0, ',', '.') }}</span>
-    @else
-        <span class="text-success">Tidak ada</span>
-    @endif
-</td>
-                            <td><span class="badge bg-secondary text-capitalize">{{ $r->status }}</span></td>
+                                @if($r->denda != 0)
+                                    <span class="text-danger fw-bold">Rp {{ number_format(abs($r->denda), 0, ',', '.') }}</span>
+                                @else
+                                    <span class="text-success">Tidak ada</span>
+                                @endif
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary text-capitalize">{{ $r->status }}</span>
+                            </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="text-center text-muted">Belum ada riwayat pengembalian.</td>
+                            <td colspan="7" class="text-center text-muted py-4">Belum ada riwayat pengembalian.</td>
                         </tr>
                         @endforelse
                     </tbody>

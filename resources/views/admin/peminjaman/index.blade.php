@@ -19,7 +19,7 @@
                             <th>Nama Peminjam</th>
                             <th>Judul Buku</th>
                             <th>Tanggal Pinjam</th>
-                            <th>Tanggal Jatuh Tempo</th>
+                            <th>Jatuh Tempo</th>
                             <th>Status</th>
                             <th class="text-center">Aksi</th>
                         </tr>
@@ -30,28 +30,28 @@
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $p->user->name }}</td>
                             <td>{{ $p->buku->judul }}</td>
-                            <td>{{ \Carbon\Carbon::parse($p->tgl_pinjam)->format('d M Y') }}</td>
-                            <td>{{ \Carbon\Carbon::parse($p->tgl_kembali_plan)->format('d M Y') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($p->tgl_pinjam)->format('d/m/Y') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($p->tgl_kembali_plan)->format('d/m/Y') }}</td>
                             <td>
                                 <span class="badge {{ $p->status == 'dipinjam' ? 'bg-warning text-dark' : 'bg-success' }}">
                                     {{ strtoupper($p->status) }}
                                 </span>
                             </td>
-                            <td>
-    @if(Auth::user()->role == 'petugas' && $p->status == 'dipinjam')
-        <a href="/peminjaman/kembalikan/{{ $p->id }}" class="btn btn-success btn-sm">
-            <i class="bi bi-arrow-return-left"></i> Kembalikan
-        </a>
-    @elseif($p->status == 'selesai')
-        <span class="badge bg-secondary">Sudah Kembali</span>
-    @else
-        <span class="text-muted">-</span>
-    @endif
-</td>
+                            <td class="text-center">
+                                @if(Auth::user()->role == 'petugas' && $p->status == 'dipinjam')
+                                    <a href="/peminjaman/kembalikan/{{ $p->id }}" class="btn btn-success btn-sm">
+                                        <i class="bi bi-arrow-return-left"></i> Kembalikan
+                                    </a>
+                                @elseif($p->status == 'selesai')
+                                    <span class="badge bg-secondary">Sudah Kembali</span>
+                                @else
+                                    <span class="text-muted">Hanya Petugas</span>
+                                @endif
+                            </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="text-center py-4 text-muted">
+                            <td colspan="7" class="text-center py-4 text-muted">
                                 <i class="bi bi-info-circle d-block mb-2 fs-3"></i>
                                 Belum ada data peminjaman saat ini.
                             </td>

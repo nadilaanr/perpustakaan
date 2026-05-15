@@ -143,7 +143,26 @@ Route::get('/peminjaman/kembalikan/{id}', function ($id) {
     });
 
     // 6. LAPORAN
-    Route::get('/laporan', function () {
-        return view('admin.laporan.index');
+    Route::get('/laporan', function (Illuminate\Http\Request $request) {
+    $tgl_mulai = $request->tgl_mulai;
+    $tgl_selesai = $request->tgl_selesai;
+
+    // Ambil data yang statusnya 'selesai'
+    $query = \App\Models\Peminjaman::with(['user', 'buku'])->where('status', 'selesai');
+
+    // Jalankan filter hanya jika user memilih tanggal
+    if ($tgl_mulai && $tgl_selesai) {
+        $query->whereDate('updated_at', '>=', $tgl_mulai)
+              ->whereDate('updated_at', '<=', $tgl_selesai);
+    }
+
+    $laporan = $query->get();
+
+    // LOGIKA PERBAIKAN: Pastikan semua denda dihitung sebagai angka positif
+    $totalDenda = $laporan->sum(function($item) {
+        return abs($item->denda);
     });
+
+    return view('admin.laporan.index', compact('laporan', 'totalDenda', 'tgl_mulai', 'tgl_selesai'));
+});
 });
