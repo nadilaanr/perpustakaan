@@ -165,4 +165,44 @@ Route::get('/peminjaman/kembalikan/{id}', function ($id) {
 
     return view('admin.laporan.index', compact('laporan', 'totalDenda', 'tgl_mulai', 'tgl_selesai'));
 });
+
+    // Proses kirim reservasi
+// Proses Reservasi
+Route::post('/reservasi/{id}', function ($id) {
+    $buku = \App\Models\Buku::findOrFail($id);
+
+    if ($buku->stok <= 0) {
+        return back()->with('error', 'Stok buku habis!');
+    }
+
+    $aktif = \App\Models\Peminjaman::where('user_id', Auth::id())
+            ->whereIn('status', ['reservasi', 'dipinjam'])
+            ->count();
+    
+    if ($aktif >= 2) {
+        return back()->with('error', 'Batas maksimal peminjaman adalah 2 buku.');
+    }
+
+    \App\Models\Peminjaman::create([
+        'user_id' => Auth::id(),
+        'buku_id' => $id,
+        'tgl_reservasi' => now(),
+        'batas_ambil' => now()->addHours(2),
+        'status' => 'reservasi',
+    ]);
+
+    $buku->decrement('stok', 1);
+
+    return back()->with('success', 'Berhasil Reservasi! Segera ambil buku dalam 2 jam (sebelum ' . now()->addHours(2)->format('H:i') . ').');
+});
+
+// Route untuk melihat buku yang sedang dipinjam
+Route::get('/pinjaman-saya', function () {
+    $pinjaman = \App\Models\Peminjaman::where('user_id', Auth::id())
+                ->with('buku')
+                ->orderBy('created_at', 'desc')
+                ->get();
+    // Kita arahkan ke file baru yang akan kita buat: pinjaman_saya.blade.php
+    return view('pinjaman_saya', compact('pinjaman'));
+});
 });

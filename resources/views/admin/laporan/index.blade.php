@@ -106,7 +106,7 @@
     }
     .card {
         border: none !important;
-        shadow: none !important;
+        box-shadow: none !important;
     }
     table {
         border-collapse: collapse !important;
