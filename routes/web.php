@@ -71,6 +71,26 @@ Route::middleware('auth')->group(function () {
     Route::put('/users/{id}', [AuthController::class, 'updateUser'])->middleware('auth');
     Route::delete('/users/{id}', [AuthController::class, 'destroyUser']);
 
+    // Menampilkan Form Tambah
+Route::get('/peminjaman/tambah', function () {
+    return view('admin.peminjaman.tambah', [
+        'users' => \App\Models\User::all(),
+        'bukus' => \App\Models\Buku::all()
+    ]);
+})->middleware('auth');
+
+// Proses Simpan Transaksi
+Route::post('/peminjaman/simpan', function (Illuminate\Http\Request $request) {
+    \App\Models\Peminjaman::create([
+        'user_id' => $request->user_id,
+        'buku_id' => $request->buku_id,
+        'tanggal_pinjam' => $request->tanggal_pinjam,
+        'tanggal_kembali' => $request->tanggal_kembali,
+        'status' => 'dipinjam' // Otomatis berstatus dipinjam
+    ]);
+    return redirect('/peminjaman')->with('success', 'Transaksi berhasil dicatat!');
+})->middleware('auth');
+
     // Transaksi Peminjaman & Pengembalian
     Route::get('/peminjaman', function () {
         $semuaPeminjaman = \App\Models\Peminjaman::with(['user', 'buku'])->get();

@@ -4,7 +4,9 @@
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4 pt-3">
         <h3 class="fw-bold">Data Transaksi Peminjaman</h3>
-        <button class="btn btn-primary btn-sm"><i class="bi bi-plus-circle"></i> Tambah Transaksi</button>
+        <a href="/peminjaman/tambah" class="btn btn-primary btn-sm">
+            <i class="bi bi-plus-circle"></i> Tambah Transaksi
+        </a>
     </div>
 
     <div class="card shadow-sm border-0">
