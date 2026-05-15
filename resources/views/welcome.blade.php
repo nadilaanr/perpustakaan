@@ -45,7 +45,7 @@
                 <a class="navbar-brand fw-bold" href="#"><i class="bi bi-book"></i> E-PERPUS</a>
                 <div class="ms-auto">
                     <a href="/login" class="btn btn-outline-light rounded-pill px-4 me-2">Login</a>
-                    <a href="/register" class="btn btn-secondary rounded-pill px-4">Daftar</a>
+                    <a href="/register" class="btn btn-outline-light rounded-pill px-4 me-2">Register</a>
                 </div>
             </div>
         </nav>

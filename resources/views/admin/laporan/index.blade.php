@@ -31,27 +31,28 @@
     </div>
 
     <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="card bg-success text-white border-0 shadow-sm">
-                <div class="card-body">
-                    <h6 class="card-title text-white-50">Total Pendapatan Denda</h6>
-                    <h3 class="fw-bold">Rp {{ number_format($totalDenda, 0, ',', '.') }}</h3>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card bg-info text-white border-0 shadow-sm">
-                <div class="card-body">
-                    <h6 class="card-title text-white-50">Total Buku Kembali</h6>
-                    <h3 class="fw-bold">{{ $laporan->count() }} Transaksi</h3>
-                </div>
+    <div class="col-md-6 mb-3">
+        <div class="card border-0 shadow-sm text-white h-100" style="background: linear-gradient(135deg, #5d4037, #3e2723); border-radius: 15px;">
+            <div class="card-body p-4">
+                <p class="mb-1 opacity-75">Total Pendapatan Denda</p>
+                <h2 class="fw-bold mb-0">Rp {{ number_format($totalDenda, 0, ',', '.') }}</h2>
             </div>
         </div>
     </div>
 
+    <div class="col-md-6 mb-3">
+        <div class="card border-0 shadow-sm text-white h-100" style="background: linear-gradient(135deg, #ad8b6a, #8d6e63); border-radius: 15px;">
+            <div class="card-body p-4">
+                <p class="mb-1 opacity-75">Total Buku Kembali</p>
+                <h2 class="fw-bold mb-0">{{ $laporan->count() }} Transaksi</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
     <div class="card shadow-sm border-0">
         <div class="card-header bg-white py-3">
-            <h6 class="m-0 fw-bold text-primary">Detail Data Transaksi Selesai</h6>
+            <h6 class="m-0 fw-bold ">Detail Data Transaksi Selesai</h6>
         </div>
         <div class="card-body">
             <div class="table-responsive">
