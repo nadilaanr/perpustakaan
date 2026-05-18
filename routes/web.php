@@ -185,12 +185,34 @@ Route::middleware('auth')->group(function () {
         return view('admin.peminjaman.index', compact('semuaPeminjaman'));
     });
 
-    // RIWAYAT PENGEMBALIAN 
-    Route::get('/pengembalian', function () {
-        $riwayatSelesai = Peminjaman::where('status', 'selesai')
-                            ->with(['user', 'buku'])
-                            ->orderBy('updated_at', 'asc') // <--- UBAH DI SINI (dari desc ke asc)
-                            ->get();
+    //  RIWAYAT PENGEMBALIAN 
+    Route::get('/pengembalian', function (Request $request) {
+        $cari = $request->cari;
+        $denda_filter = $request->denda_filter;
+
+        $query = Peminjaman::where('status', 'selesai')->with(['user', 'buku']);
+
+        // Filter berdasarkan teks nama pengguna atau judul buku
+        if ($cari) {
+            $query->where(function ($q) use ($cari) {
+                $q->whereHas('user', function ($u) use ($cari) {
+                    $u->where('name', 'like', "%$cari%");
+                })->orWhereHas('buku', function ($b) use ($cari) {
+                    $b->where('judul', 'like', "%$cari%");
+                });
+            });
+        }
+
+        // Filter berdasarkan kondisi nominal denda
+        if ($denda_filter == 'berdenda') {
+            $query->where('denda', '>', 0);
+        } elseif ($denda_filter == 'bebas') {
+            $query->where('denda', 0);
+        }
+
+        // Urutan kronologis dari transaksi lama di atas, data baru di bawah
+        $riwayatSelesai = $query->orderBy('updated_at', 'asc')->get();
+
         return view('admin.pengembalian.index', compact('riwayatSelesai')); 
     });
 
@@ -217,7 +239,7 @@ Route::middleware('auth')->group(function () {
 
     //  PROSES RESERVASI (SISI PEMINJAM)
     Route::post('/reservasi/{id}', function ($id) {
-        $sekarang = now();
+        $sekarang = \Carbon\Carbon::now(); // Menggunakan Carbon murni agar timezone sinkron
         $hari = $sekarang->format('N'); 
         $jam = $sekarang->format('H:i');
 
@@ -245,11 +267,15 @@ Route::middleware('auth')->group(function () {
             return back()->with('error', 'Batas maksimal peminjaman adalah 2 buku.');
         }
 
+        // PERBAIKAN LOGIKA: Kunci waktu sekarang ke dalam variabel agar perhitungannya presisi
+        $waktu_reservasi = \Carbon\Carbon::now();
+        $waktu_batas_ambil = \Carbon\Carbon::now()->addHours(2);
+
         \App\Models\Peminjaman::create([
             'user_id' => Auth::id(),
             'buku_id' => $id,
-            'tgl_reservasi' => now(),
-            'batas_ambil' => now()->addHours(2),
+            'tgl_reservasi' => $waktu_reservasi,
+            'batas_ambil' => $waktu_batas_ambil, // <--- Dijamin masuk database ditambah 2 jam
             'status' => 'reservasi',
             'denda' => 0,
         ]);

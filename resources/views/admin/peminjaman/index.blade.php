@@ -65,7 +65,11 @@
                             <th>Judul Buku</th>
                             <th>Tanggal Pinjam</th>
                             <th>Jatuh Tempo / Batas</th>
-                            <th class="pe-4">Status</th>
+                            <th>Status</th>
+                            {{-- FIX: Header Aksi hanya muncul jika user yang login adalah petugas --}}
+                            @if(Auth::user()->role == 'petugas')
+                                <th class="text-center pe-4">Aksi</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -88,8 +92,7 @@
                                     {{ $p->tgl_kembali_plan ? \Carbon\Carbon::parse($p->tgl_kembali_plan)->format('d/m/Y') : '-' }}
                                 @endif
                             </td>
-                            <td class="pe-4">
-                                {{-- Desain warna badge dinamis agar variatif sesuai status transaksi --}}
+                            <td>
                                 @if($p->status == 'reservasi')
                                     <span class="badge bg-info text-dark px-2 py-1 text-uppercase" style="font-size: 11px;">Reservasi</span>
                                 @elseif($p->status == 'dipinjam')
@@ -100,10 +103,29 @@
                                     <span class="badge bg-danger px-2 py-1 text-uppercase" style="font-size: 11px;">Batal</span>
                                 @endif
                             </td>
+                            {{-- FIX: Kolom isi Aksi beserta tombolnya hanya dirender jika role-nya petugas --}}
+                            @if(Auth::user()->role == 'petugas')
+                                <td class="text-center pe-4">
+                                    @if($p->status == 'reservasi')
+                                        <a href="/peminjaman/ambil/{{ $p->id }}" class="btn btn-sm btn-success fw-bold" 
+                                           onclick="return confirm('Konfirmasi pengambilan buku fisik untuk peminjam ini?')" style="border-radius: 6px;">
+                                            <i class="bi bi-check-lg"></i> Ambil Buku
+                                        </a>
+                                    @elseif($p->status == 'dipinjam')
+                                        <a href="/peminjaman/kembalikan/{{ $p->id }}" class="btn btn-sm btn-primary fw-bold" 
+                                           onclick="return confirm('Proses pengembalian buku ini?')" style="border-radius: 6px;">
+                                            <i class="bi bi-arrow-counterclockwise"></i> Kembalikan
+                                        </a>
+                                    @else
+                                        <span class="text-muted small">-</span>
+                                    @endif
+                                </td>
+                            @endif
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="text-center text-muted py-5">
+                            {{-- Kolom menyesuaikan dinamis agar td tidak pecah layout --}}
+                            <td colspan="{{ Auth::user()->role == 'petugas' ? 7 : 6 }}" class="text-center text-muted py-5">
                                 <i class="bi bi-cart-x d-block mb-2 fs-2"></i>
                                 Data transaksi tidak ditemukan.
                             </td>

@@ -3,7 +3,43 @@
 @section('content')
 <div class="container-fluid px-4">
     <div class="d-flex justify-content-between align-items-center mb-4 pt-3">
-        <h3 class="fw-bold" style="color: #2b1506;">Riwayat Pengembalian Buku</h3>
+        <h3 class="fw-bold">Riwayat Pengembalian Buku</h3>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4" style="border-radius: 12px;">
+        <div class="card-body p-3">
+            <form action="/pengembalian" method="GET" class="row g-2 align-items-center">
+                <div class="col-md-5">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                        <input type="text" name="cari" class="form-control border-start-0 ps-0" 
+                               placeholder="Cari nama peminjam atau judul buku..." value="{{ request('cari') }}">
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-light text-muted small fw-bold">Status Denda</span>
+                        <select name="denda_filter" class="form-select">
+                            <option value="">-- Semua Riwayat --</option>
+                            <option value="berdenda" {{ request('denda_filter') == 'berdenda' ? 'selected' : '' }}>Hanya Bermasalah (Ada Denda)</option>
+                            <option value="bebas" {{ request('denda_filter') == 'bebas' ? 'selected' : '' }}>Tepat Waktu (Tanpa Denda)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-sm btn-dark w-100 rounded-pill fw-bold">
+                        <i class="bi bi-funnel"></i> Filter
+                    </button>
+                    @if(request('cari') || request('denda_filter'))
+                        <a href="/pengembalian" class="btn btn-sm btn-outline-secondary w-100 rounded-pill">
+                            Reset
+                        </a>
+                    @endif
+                </div>
+            </form>
+        </div>
     </div>
 
     <div class="card shadow-sm border-0" style="border-radius: 12px; overflow: hidden;">
@@ -44,7 +80,7 @@
                         <tr>
                             <td colspan="7" class="text-center text-muted py-5">
                                 <i class="bi bi-journal-check d-block mb-2 fs-3"></i>
-                                Belum ada riwayat pengembalian.
+                                Riwayat pengembalian tidak ditemukan.
                             </td>
                         </tr>
                         @endforelse
